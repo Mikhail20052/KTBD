@@ -1,0 +1,15 @@
+select
+	substring(data, 1, strpos(data, chr (9))) as ip,
+	to_timestamp(replace(substring(data, strpos(data, chr(9)), 17), chr(9), ''), 'YYYYMMDDHH24MISS') as date,
+	substring(
+		data,
+		strpos(data, 'http'),
+		strpos(substring(data, strpos (data, 'http')), chr (9))
+	) as link,
+	substring(
+		split_part(data, chr (9), 8),
+		1,
+		strpos(split_part(data, chr(9), 8), '/') -1
+	) as browser,
+	substring(data, strpos(data, chr(32))) as user_agent
+from de.log

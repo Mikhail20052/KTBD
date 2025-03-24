@@ -1,0 +1,43 @@
+with tmp as(
+	select
+		cast(substring(
+		value,
+		strpos(value, '<p>') + 3,
+		(strpos(substring(value, strpos (value, '<p>') + 3), '</') - 1)
+	) as int) + 1 as id,
+	substring(
+		value,
+		strpos(value, '<h1>') + 4,
+		(strpos(substring(value, strpos (value, '<h1>') + 4), '</') - 1)
+	) as category,
+	substring(
+		value,
+		strpos(value, 'class="title"') + 14,
+		(strpos(substring(value, strpos (value, 'class="title"') + 14), '</') - 1)
+	) as title,
+	trim (substring(
+		value,
+		strpos(value, 'class="author"') + 15,
+		(strpos(substring(value, strpos(value, 'class="author"') + 15), '</') - 1)
+	)) as author,
+	cast(substring(
+		value,
+		strpos(value, 'class="price"') + 14,
+		(strpos(substring (value, strpos (value, 'class="price"') + 14), chr (8381)) - 2)
+	) as int) as price
+from de.html_data
+)
+select
+	id,
+	category,
+	case
+		when strpos(title, ':') != 0 then substring(title, 1, strpos(title, ':') - 1)
+		else title
+	end as title,
+	author,
+	price,
+	case
+		when strpos(title, ':') != 0 then substring(title, strpos(title, ':') + 1)
+	else null
+	end as genre
+from tmp
