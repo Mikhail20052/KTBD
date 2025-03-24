@@ -1,0 +1,57 @@
+SELECT
+  first_name,
+  last_name
+from employees
+WHERE manager_id IS NULL and commission_pct IS NOT NULL
+
+
+SELECT
+  first_name,
+  phone_number,
+  email,
+  job_id
+from employees
+WHERE job_id NOT LIKE 'S%'
+
+
+SELECT
+  first_name
+from employees
+WHERE first_name like '___d%'
+
+
+SELECT
+  first_name,
+  last_name,
+  phone_number
+from employees
+WHERE phone_number like '515%'
+
+
+SELECT
+  first_name,
+  last_name,
+  salary,
+  commission_pct
+from employees
+WHERE salary + (salary * commission_pct) > 10000
+
+
+SELECT 
+  * 
+from regions
+WHERE region_name not like '%_ _%';
+
+
+SELECT 
+  * 
+FROM orders
+WHERE OrderDate like '1997%'
+WHERE CustomerID BETWEEN 10 AND 30 and EmployeeID BETWEEN 5 AND 9
+
+
+SELECT 
+  SupplierID,
+  SupplierName
+FROM suppliers
+WHERE SupplierName like '%_ _%_ _%_ _%_ _%';
