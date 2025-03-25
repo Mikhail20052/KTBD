@@ -1,0 +1,40 @@
+import psycopg2
+import pandas as pd
+
+# Подключение к PostgreSQL
+conn = psycopg2.connect(database="home",
+                        host="212.8.247.94",
+                        user="student",
+                        password="gendalfthegreat",
+                        port="5432")
+conn.autocommit = False
+cursor = conn.cursor()
+
+file_path = 'medicine.xlsx'
+df = pd.read_excel(file_path, sheet_name='easy', header=0, index_col=None)
+
+cursor.execute("SELECT * FROM de.med_an_name")
+med_an_name = pd.DataFrame(cursor.fetchall(), columns=[desc[0] for desc in cursor.description])
+
+cursor.execute("SELECT * FROM de.med_name")
+med_name = pd.DataFrame(cursor.fetchall(), columns=[desc[0] for desc in cursor.description])
+
+df = df.merge(med_an_name, left_on='Анализ', right_on='code', how='left')
+df = df.merge(med_name, left_on='Код пациента', right_on='patient_id', how='left')
+
+def check_status(row):
+    if row['Значение'] < row['30']: return 'Понижен'
+    if row['Значение'] > row['30']: return 'Повышен'
+    return 'В норме'
+
+df['Заключение'] = df.apply(check_status, axis=1)
+
+df_result = df[df['Заключение'] != 'В норме'][['phone', 'name', 'Анализ', 'Заключение']]
+
+output_file = 'result.xlsx'
+df_result.to_excel(output_file, sheet_name='result', index=False)
+
+cursor.close()
+conn.close()
+
+print('Результаты сохранены в output_file')
